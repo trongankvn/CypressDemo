@@ -23,3 +23,33 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+import '@testing-library/cypress/add-commands'
+
+
+//CUSTOM COMMANDS TO SET AND GET LOCAL STORAGE WITH KEY & VALUE PAIR.
+Cypress.Commands.add('setLocalStorage',(key,value)=>{
+  cy.window().then((window)=>{
+    window.localStorage.setItem(key, value)
+  })
+})
+
+Cypress.Commands.add('getLocalStorage',(key)=>{
+  cy.window().then((window)=>{
+    return window.localStorage.getItem(key)
+  })
+})
+
+//CUSTOM COMMAND TO OVERWRITE EXISTING TYPE COMMAND
+Cypress.Commands.overwrite('type', (originalFn, ele, text, options)=>{
+  if(options && options.sensitive){
+    options.log = false
+
+    Cypress.log({
+      $el: ele,
+      name:'type',
+      message: '*'.repeat(text.length)
+    })
+  }
+  return originalFn(ele,text,options)
+})
